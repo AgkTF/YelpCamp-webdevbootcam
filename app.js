@@ -16,7 +16,10 @@ var campgroundRoutes    = require('./routes/campgrounds'),
     commentRoutes      = require('./routes/comments'),
     indexRoutes         = require('./routes/index');
 
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser: true});
+mongoose.connect("mongodb://agktf:thp2safer@ds133262.mlab.com:33262/yelpcamp-webdev", {
+    useNewUrlParser: true
+});
+// mongoose.connect("mongodb://localhost:27017/yelp_camp", { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(methodOverride("_method"));
