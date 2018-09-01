@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 
-<!-- <div class="container"> -->
+<div class="container">
     <div class="row">
         <div class="col-md-3">
             <p class="lead">YelpCamp</p>
@@ -9,6 +9,7 @@
                 <li class="list-group-item">Info 2</li>
                 <li class="list-group-item">Info 3</li>
             </ul>
+            <div id="map"></div>
         </div>
 
         <div class="col-md-9">
@@ -56,6 +57,23 @@
             </div>
         </div>
     </div>
-<!-- </div> -->
+    <script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoiYWdrdGYiLCJhIjoiY2psajd6YnVoMDk5ajN4bjNhZWwxMTdhOCJ9.EFxmdAwsJspgU-RYAKSc6g';
+        // Initialize the geocoder
+        var geocoder = L.mapbox.geocoder('mapbox.places');
+        // Initialize the map
+        var map = L.mapbox.map('map', 'mapbox.outdoors').setView([37.8, -96], 4);;
+        var locationStr = "<%= campground.location %>";
+        geocoder.query(locationStr, showMap);
+        function showMap(err, data) {
+            if (data.lbounds) {
+                map.fitBounds(data.lbounds);
+            } else if (data.latlng) {
+                map.setView([data.latlng[0], data.latlng[1], 16]);
+            }
+            L.marker([data.latlng[0], data.latlng[1]]).addTo(map);
+        }
+    </script>
+</div>
 
 <% include ../partials/footer %>
