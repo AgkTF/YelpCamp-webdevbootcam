@@ -27,6 +27,7 @@ app.use(require('express-session')({
     saveUninitialized: false
 }));
 app.use(flash());
+app.locals.moment = require('moment');
 
 // PASSPORT CONFIG
 app.use(passport.initialize());
