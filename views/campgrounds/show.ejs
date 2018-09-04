@@ -11,7 +11,6 @@
             </ul>
             <div id="map"></div>
         </div>
-
         <div class="col-md-9">
             <div class="thumbnail">
                 <img src="<%= campground.image %>" class="img-responsive">
@@ -23,7 +22,7 @@
                         <em>Submitted By:</em>
                         <%= campground.author.username %>, <%= moment(campground.createdAt).fromNow() %>
                     </p>
-                    <% if (currentUser && campground.author.id.equals(currentUser._id)) { %>
+                    <% if (currentUser && campground.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
                         <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-xs btn-info">Edit Campground</a>
                         <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST" class="delete-form">
                             <button class="btn btn-xs btn-danger">Delete Campground</button>
@@ -42,7 +41,7 @@
                             <strong><%= comment.author.username %></strong>
                             <span class="pull-right"><%= moment(campground.createdAt).fromNow() %></span>
                             <p><%= comment.text %></p>
-                            <% if (currentUser && comment.author.id.equals(currentUser._id)) { %>
+                            <% if (currentUser && comment.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
                                 <a  href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit" 
                                     class="btn btn-xs btn-warning">
                                     Edit comment
@@ -62,7 +61,7 @@
         // Initialize the geocoder
         var geocoder = L.mapbox.geocoder('mapbox.places');
         // Initialize the map
-        var map = L.mapbox.map('map', 'mapbox.outdoors').setView([37.8, -96], 4);;
+        var map = L.mapbox.map('map', 'mapbox.outdoors');
         var locationStr = "<%= campground.location %>";
         geocoder.query(locationStr, showMap);
         function showMap(err, data) {

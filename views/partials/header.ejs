@@ -23,18 +23,24 @@
                     <a class="navbar-brand" href="/">YelpCamp</a>
                 </div>
                 <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li class="<%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>"><a href="/campgrounds">Home</a></li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <% if(!currentUser) { %>
-                            <li class="<%= typeof page !== 'undefined' && page === 'campgrounds' ? "active" : '' %>">
+                            <li class="<%= typeof page !== 'undefined' && page === 'login' ? "active" : '' %>">
                                 <a href="/login">Login</a>
                             </li>
-                            <li>
+                            <li class="<%= typeof page !== 'undefined' && page === 'register' ? "active" : '' %>">
                                 <a href="/register">Sign Up</a>
                             </li>
                         <% } else { %>
                             <li>
                                 <a>Logged in as 
                                     <strong>"<%= currentUser.username %>"</strong>
+                                <% if (currentUser.isAdmin) { %>
+                                    <span id="admin"><em>ADMIN</em></span>
+                                <% } %>
                                 </a>
                             </li>
                             <li>
