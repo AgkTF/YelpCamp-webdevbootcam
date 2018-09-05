@@ -20,7 +20,7 @@
                     <p><%= campground.description %></p>
                     <p>
                         <em>Submitted By:</em>
-                        <%= campground.author.username %>, <%= moment(campground.createdAt).fromNow() %>
+                        <a href="/users/<%= campground.author.id %>"><%= campground.author.username %></a>, <%= moment(campground.createdAt).fromNow() %>
                     </p>
                     <% if (currentUser && campground.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
                         <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-xs btn-info">Edit Campground</a>
