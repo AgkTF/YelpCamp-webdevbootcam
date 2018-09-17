@@ -3,6 +3,31 @@ var express = require('express');
 var router  = express.Router();
 var Campground = require('../models/campground');
 var middleware = require('../middleware');
+var multer = require('multer');
+var cloudinary = require('cloudinary');
+
+// Multer Config
+var storage = multer.diskStorage({
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    }
+});
+
+var imageFilter = function (req, file, cb) {
+    // accept image files ONLY
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error("Only image files allowed!"), false);
+    }
+    cb(null, true);
+};
+var upload = multer({storage: storage, fileFilter: imageFilter});
+
+// Cloudinary Config
+cloudinary.config({
+    cloud_name: 'cloud2018',
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 //INDEX - show all campgrounds
 router.get("/", function (req, res) {
@@ -29,7 +54,7 @@ router.get("/", function (req, res) {
                 console.log(err);
             } else {
                 res.render("campgrounds/index", {
-                    campgrounds: allCampgrounds
+                    campgrounds: allCampgrounds, page: 'campgrounds'
                 });
 
             }
@@ -38,35 +63,27 @@ router.get("/", function (req, res) {
 });
 
 //CREATE - add new campground to DB
-router.post("/", middleware.isLoggedIn, function (req, res) {
-    // get data from form and add to campgrounds array
-    var campgroundName      = req.body.campgroundName;
-    var campgroundImage     = req.body.campgroundImage;
-    var campgroundDesc      = req.body.description;
-    var campgroundAuthor    = {
-        id: req.user._id,
-        username: req.user.username
-    };
-    var campgroundPrice     = req.body.price;
-    var campgroundLocation  = req.body.campgroundLocation;
-    var newCampground = {
-        name: campgroundName,
-        price: campgroundPrice,
-        image: campgroundImage,
-        location: campgroundLocation,
-        description: campgroundDesc,
-        author: campgroundAuthor
-    };
-    console.log(req.user);
-    // Create a new campground and save it to DB
-    Campground.create(newCampground, function (err, newlyCreated) {
-        if (err) {
-            console.log(err);
-        } else {
-            // redirect back to campgrounds
-            console.log(newlyCreated);
-            res.redirect("campgrounds");
+router.post("/", middleware.isLoggedIn, upload.single('image'), function (req, res) {
+    cloudinary.uploader.upload(req.file.path, function(result){
+        // get data from form
+        var newCampground = req.body.campground;
+        var campgroundAuthor = {
+            id: req.user._id,
+            username: req.user.username
         }
+        newCampground.author = campgroundAuthor;
+        // add cloudinary image url to the image property of the new campground
+        newCampground.image = result.secure_url;
+        // Create a new campground and save it to DB
+        Campground.create(newCampground, function (err, newlyCreated) {
+            if (err) {
+                req.flash("error", err.message);
+                return res.redirect("back");
+            } else {
+                // redirect back to the new campground
+                res.redirect("/campgrounds/" + newlyCreated.id);
+            }
+        });
     });
 });
 
@@ -102,14 +119,19 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, function (req, res)
 
 
 // UPDATE -  update particular campground and redirect somewhere
-router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
-    Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (err, updatedCampground) {
-       if (err) {
-            res.redirect("/campgrounds");
-       } else {
-            res.redirect("/campgrounds/" + req.params.id)
-       }
-    });
+router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), function (req, res) {
+		cloudinary.uploader.upload(req.file.path, function (result) {
+		// req.body.image = result.secure_url;
+		req.body.campground.image = result.secure_url;
+		Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (err, updatedCampground) {
+			if (err) {
+				req.flash("error", err.message);
+				return res.redirect("/campgrounds");
+			} else {
+				res.redirect("/campgrounds/" + req.params.id)
+			}
+		});
+	});
 });
 
 
