@@ -40,8 +40,17 @@ passport.deserializeUser(User.deserializeUser());
 // A middleware to pass the current user information to all the templates
 // saved in res.locals ==> will create local variables that are available only 
 // to the views rendered during that request
-app.use(function (req, res, next) {
+app.use(async function (req, res, next) {
     res.locals.currentUser  = req.user;
+    // Handle the unread notifications
+    if(req.user) {
+        try {
+            let user = await User.findById(req.user._id).populate('notifications', null, { isRead: false }).exec();
+            res.locals.notifications = user.notifications.reverse();
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
     res.locals.error        = req.flash("error");
     res.locals.success      = req.flash("success");
     next();

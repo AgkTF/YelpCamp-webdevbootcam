@@ -1,24 +1,31 @@
 <% include ../partials/header %>
-    <div class="row">
-        <div class="col-md-4">
-            <h1>
-                <%= user.firstName + " " + user.lastName %>
-            </h1>
-            <div class="thumbnail">
-                <img src="<%= user.avatar %>" alt="user profile image" class="img-rounded">
-                <div class="caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div>
-            </div>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit dignissimos, beatae quam at quae facere quia enim cum, quidem tempora, consectetur veniam in quos excepturi obcaecati vitae dolores natus quo!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita necessitatibus similique nulla vero, itaque et repellendus ullam neque eaque illum exercitationem. Harum fuga excepturi rem qui consequuntur, sed dignissimos laborum!
+<div class="row">
+    <div class="col-md-4">
+        <h1>
+            <%= user.firstName + " " + user.lastName %>
+        </h1>
+        <a href="/follow/<%= user.id %>" class="btn btn-primary btn-block" id="follow-btn">Follow</a>
+        <div class="thumbnail">
+            <img src="<%= user.avatar %>" alt="user profile image" class="img-rounded">
+            <div class="caption"><a href="mailto:<%= user.email %>">
+                    <%= user.email %></a></div>
         </div>
-        <div class="col-md-8">
-            <h3><%= user.username %>'s campgrounds:</h3>
-            <ul>
-                <% campgrounds.forEach(function(campground){ %>
-                    <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
-                <% }); %>
-            </ul>
-        </div>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit dignissimos, beatae quam at quae facere quia
+        enim cum, quidem tempora, consectetur veniam in quos excepturi obcaecati vitae dolores natus quo!
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita necessitatibus similique nulla vero, itaque
+        et repellendus ullam neque eaque illum exercitationem. Harum fuga excepturi rem qui consequuntur, sed
+        dignissimos laborum!
     </div>
+    <div class="col-md-8">
+        <h3>
+            <%= user.username %>'s campgrounds:</h3>
+        <ul>
+            <% campgrounds.forEach(function(campground){ %>
+            <li><a href="/campgrounds/<%= campground.id %>">
+                    <%= campground.name %></a></li>
+            <% }); %>
+        </ul>
+    </div>
+</div>
 
 <% include ../partials/footer %>
